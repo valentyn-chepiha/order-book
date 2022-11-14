@@ -29,7 +29,7 @@ public class BuyProcessingHandler implements ProcessingHandler {
                     operation.setCount(0);
                     value *= -1;
                 }
-                transactionDaoDb.put(TypeUpdate.BID, operation);
+                transactionDaoDb.put(TypeUpdate.ASK, operation);
             } else {
                 operation = null;
             }
