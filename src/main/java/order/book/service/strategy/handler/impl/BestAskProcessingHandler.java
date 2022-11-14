@@ -24,12 +24,12 @@ public class BestAskProcessingHandler implements ProcessingHandler {
         Set<Map.Entry<Long, Long>> allAsks = transactionDaoDb.getAll(TypeUpdate.ASK);
         Operation operation = AnaliseTransaction.getBestAsk(allAsks);
         if (operation != null) {
-            reportService.add(operation.toString());
+            reportService.add(operation.toReport());
             return;
         }
         operation = AnaliseTransaction.getBestAskWithZero(allAsks);
         if (operation != null) {
-            reportService.add(operation.toString());
+            reportService.add(operation.toReport());
         }
     }
 }
