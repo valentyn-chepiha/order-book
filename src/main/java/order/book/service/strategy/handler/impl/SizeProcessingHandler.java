@@ -24,7 +24,7 @@ public class SizeProcessingHandler implements ProcessingHandler {
         for (TypeUpdate typeUpdate : TypeUpdate.values()) {
             Set<Map.Entry<Long, Long>> transactions = transactionDaoDb.getAll(typeUpdate);
             for (Map.Entry<Long, Long> transaction : transactions) {
-                if (transaction.getKey().equals(price)) {
+                if (transaction.getKey().equals(price) && transaction.getValue() > 0) {
                     reportService.add("" + transaction.getValue());
                 }
             }

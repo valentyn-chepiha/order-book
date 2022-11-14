@@ -1,6 +1,7 @@
-package order.book.service.strategy;
+package order.book.service.strategy.impl;
 
 import order.book.model.types.TypeQuery;
+import order.book.service.strategy.TypeProcessingStrategy;
 import order.book.service.strategy.handler.ProcessingHandler;
 import order.book.service.strategy.maps.TypeQueryOperationProcessing;
 

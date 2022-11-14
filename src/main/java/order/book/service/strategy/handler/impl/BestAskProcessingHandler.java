@@ -25,6 +25,11 @@ public class BestAskProcessingHandler implements ProcessingHandler {
         Operation operation = AnaliseTransaction.getBestAsk(allAsks);
         if (operation != null) {
             reportService.add(operation.toString());
+            return;
+        }
+        operation = AnaliseTransaction.getBestAskWithZero(allAsks);
+        if (operation != null) {
+            reportService.add(operation.toString());
         }
     }
 }
