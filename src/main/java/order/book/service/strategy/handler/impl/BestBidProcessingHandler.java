@@ -24,12 +24,12 @@ public class BestBidProcessingHandler implements ProcessingHandler {
         Set<Map.Entry<Long, Long>> allBids = transactionDaoDb.getAll(TypeUpdate.BID);
         Operation operation = AnaliseTransaction.getBestBid(allBids);
         if (operation != null) {
-            reportService.add(operation.toString());
+            reportService.add(operation.toReport());
             return;
         }
         operation = AnaliseTransaction.getBestBidWithZero(allBids);
         if (operation != null) {
-            reportService.add(operation.toString());
+            reportService.add(operation.toReport());
         }
     }
 }

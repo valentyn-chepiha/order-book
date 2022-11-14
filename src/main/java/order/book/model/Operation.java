@@ -1,27 +1,15 @@
 package order.book.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Operation {
     private long price;
     private long count;
 
-    public long getPrice() {
-        return price;
-    }
-
-    public void setPrice(long price) {
-        this.price = price;
-    }
-
-    public long getCount() {
-        return count;
-    }
-
-    public void setCount(long count) {
-        this.count = count;
-    }
-
-    @Override
-    public String toString() {
+    public String toReport() {
         return price + "," + count;
     }
 }
