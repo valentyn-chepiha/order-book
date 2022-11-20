@@ -16,11 +16,11 @@ public class SellProcessingHandler implements ProcessingHandler {
 
     @Override
     public void processing(String[] data) {
-        Long value = Long.parseLong(data[INDEX_OF_COUNT]);
+        long value = Long.parseLong(data[INDEX_OF_COUNT]);
         Operation operation;
         do {
             operation = AnaliseTransaction.getBestBid(transactionDaoDb.getAll(TypeUpdate.BID));
-            if (operation != null && operation.getCount() > 0) {
+            if (operation != null) {
                 value = operation.getCount() - value;
                 if (value >= 0) {
                     operation.setCount(value);
@@ -30,8 +30,6 @@ public class SellProcessingHandler implements ProcessingHandler {
                     value *= -1;
                 }
                 transactionDaoDb.put(TypeUpdate.BID, operation);
-            } else {
-                operation = null;
             }
         } while (value > 0 && operation != null);
     }

@@ -25,11 +25,6 @@ public class BestBidProcessingHandler implements ProcessingHandler {
         Operation operation = AnaliseTransaction.getBestBid(allBids);
         if (operation != null) {
             reportService.add(operation.toReport());
-            return;
-        }
-        operation = AnaliseTransaction.getBestBidWithZero(allBids);
-        if (operation != null) {
-            reportService.add(operation.toReport());
         }
     }
 }

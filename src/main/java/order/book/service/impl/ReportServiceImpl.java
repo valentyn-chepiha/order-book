@@ -10,11 +10,11 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public void add(String line) {
-        report.add(line + LINE_SEPARATOR);
+        report.add(line);
     }
 
     @Override
     public String buildReport() {
-        return String.join("", report);
+        return String.join(LINE_SEPARATOR, report);
     }
 }

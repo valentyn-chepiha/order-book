@@ -1,7 +1,7 @@
 package order.book.model.types;
 
 public enum TypeUpdate {
-    ASK("ask"), BID("bid"), SPREAD("spread");
+    ASK("ask"), BID("bid");
 
     private String shortName;
 
