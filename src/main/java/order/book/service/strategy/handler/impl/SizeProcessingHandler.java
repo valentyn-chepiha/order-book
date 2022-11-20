@@ -1,7 +1,10 @@
 package order.book.service.strategy.handler.impl;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 import order.book.dao.TransactionDaoDb;
 import order.book.model.types.TypeUpdate;
 import order.book.service.ReportService;
@@ -20,14 +23,16 @@ public class SizeProcessingHandler implements ProcessingHandler {
 
     @Override
     public void processing(String[] params) {
-        Long price = Long.parseLong(params[INDEX_OF_COUNT]);
-        for (TypeUpdate typeUpdate : TypeUpdate.values()) {
-            Set<Map.Entry<Long, Long>> transactions = transactionDaoDb.getAll(typeUpdate);
-            for (Map.Entry<Long, Long> transaction : transactions) {
-                if (transaction.getKey().equals(price) && transaction.getValue() > 0) {
-                    reportService.add("" + transaction.getValue());
-                }
-            }
+        List<Map.Entry<Long, Long>> items = Arrays.stream(TypeUpdate.values())
+                .map(transactionDaoDb::getAll)
+                .flatMap(Collection::stream)
+                .filter(e -> e.getValue() >= 0
+                        && e.getKey().equals(Long.parseLong(params[INDEX_OF_COUNT])))
+                .collect(Collectors.toList());
+        if (items.size() == 0) {
+            reportService.add("0");
+            return;
         }
+        items.forEach(e -> reportService.add("" + e.getValue()));
     }
 }
