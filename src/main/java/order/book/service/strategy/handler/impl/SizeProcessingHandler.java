@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import order.book.dao.TransactionDaoDb;
+import order.book.model.Model;
+import order.book.model.Query;
 import order.book.model.types.TypeUpdate;
 import order.book.service.ReportService;
 import order.book.service.strategy.handler.ProcessingHandler;
 
 public class SizeProcessingHandler implements ProcessingHandler {
-    private static final int INDEX_OF_COUNT = 1;
     private final TransactionDaoDb transactionDaoDb;
     private final ReportService reportService;
 
@@ -22,12 +23,11 @@ public class SizeProcessingHandler implements ProcessingHandler {
     }
 
     @Override
-    public void processing(String[] params) {
+    public void processing(Model transaction) {
         List<Map.Entry<Long, Long>> items = Arrays.stream(TypeUpdate.values())
                 .map(transactionDaoDb::getAll)
                 .flatMap(Collection::stream)
-                .filter(e -> e.getValue() >= 0
-                        && e.getKey().equals(Long.parseLong(params[INDEX_OF_COUNT])))
+                .filter(e -> e.getKey().equals(((Query)transaction).getPrice()))
                 .collect(Collectors.toList());
         if (items.size() == 0) {
             reportService.add("0");
