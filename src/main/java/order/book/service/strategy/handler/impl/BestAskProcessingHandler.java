@@ -3,7 +3,10 @@ package order.book.service.strategy.handler.impl;
 import java.util.Map;
 import java.util.Set;
 import order.book.dao.TransactionDaoDb;
+import order.book.model.Model;
 import order.book.model.Operation;
+import order.book.model.Update;
+//import order.book.model.types.TypeUpdate;
 import order.book.model.types.TypeUpdate;
 import order.book.service.ReportService;
 import order.book.service.strategy.handler.ProcessingHandler;
@@ -20,9 +23,12 @@ public class BestAskProcessingHandler implements ProcessingHandler {
     }
 
     @Override
-    public void processing(String[] params) {
+    public void processing(Model transaction) {
+//        Set<Map.Entry<Long, Long>> allAsks = transactionDaoDb.getAll(((Update) transaction).getTypeUpdate());
         Set<Map.Entry<Long, Long>> allAsks = transactionDaoDb.getAll(TypeUpdate.ASK);
         Operation operation = AnaliseTransaction.getBestAsk(allAsks);
+        // todo
+        //      подумати як прибрати умовний оператор
         if (operation != null) {
             reportService.add(operation.toReport());
         }

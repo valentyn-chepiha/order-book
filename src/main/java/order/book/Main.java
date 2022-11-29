@@ -1,8 +1,14 @@
 package order.book;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import order.book.dao.TransactionDaoDb;
 import order.book.dao.TransactionDaoDbImpl;
+import order.book.model.Model;
+import order.book.model.Order;
+import order.book.model.Query;
+import order.book.model.Update;
 import order.book.model.types.TypeOrder;
 import order.book.model.types.TypeQuery;
 import order.book.model.types.TypeTransaction;
@@ -16,6 +22,17 @@ import order.book.service.impl.FileWriterServiceImpl;
 import order.book.service.impl.ReportServiceImpl;
 import order.book.service.impl.TransactionServiceImpl;
 import order.book.service.strategy.TypeProcessingStrategy;
+import order.book.service.strategy.handler.ProcessingHandler;
+import order.book.service.strategy.handler.impl.AskProcessingHandler;
+import order.book.service.strategy.handler.impl.BestAskProcessingHandler;
+import order.book.service.strategy.handler.impl.BestBidProcessingHandler;
+import order.book.service.strategy.handler.impl.BidProcessingHandler;
+import order.book.service.strategy.handler.impl.BuyProcessingHandler;
+import order.book.service.strategy.handler.impl.OrderProcessingHandler;
+import order.book.service.strategy.handler.impl.QueryProcessingHandler;
+import order.book.service.strategy.handler.impl.SellProcessingHandler;
+import order.book.service.strategy.handler.impl.SizeProcessingHandler;
+import order.book.service.strategy.handler.impl.UpdateProcessingHandler;
 import order.book.service.strategy.impl.OrderProcessingStrategy;
 import order.book.service.strategy.impl.QueryProcessingStrategy;
 import order.book.service.strategy.impl.TransactionProcessingStrategy;
@@ -31,34 +48,50 @@ public class Main {
 
     public static void main(String[] args) {
         TransactionDaoDb transactionDaoDb = new TransactionDaoDbImpl();
-
+        ReportService reportService = new ReportServiceImpl();
         FileReaderService fileReaderService = new FileReaderServiceImpl();
         FileWriterService fileWriterService = new FileWriterServiceImpl();
-        ReportService reportService = new ReportServiceImpl();
+
+        Map<Object, ProcessingHandler> map = new HashMap<>();
+        map.put(TypeUpdate.ASK, new AskProcessingHandler(transactionDaoDb));
+        map.put(TypeUpdate.BID, new BidProcessingHandler(transactionDaoDb));
+        map.put(TypeQuery.BEST_BID, new BestBidProcessingHandler(transactionDaoDb, reportService));
+        map.put(TypeQuery.BEST_ASK, new BestAskProcessingHandler(transactionDaoDb, reportService));
+        map.put(TypeQuery.SIZE, new SizeProcessingHandler(transactionDaoDb, reportService));
+        map.put(TypeOrder.BUY, new BuyProcessingHandler(transactionDaoDb));
+        map.put(TypeOrder.SELL, new SellProcessingHandler(transactionDaoDb));
 
         TypeUpdateOperationProcessing typeUpdateOperationProcessing =
-                new TypeUpdateOperationProcessing(transactionDaoDb);
+                new TypeUpdateOperationProcessing(map);
         TypeProcessingStrategy<TypeUpdate> updateProcessingStrategy =
                 new UpdateProcessingStrategy(typeUpdateOperationProcessing);
 
         TypeQueryOperationProcessing typeQueryOperationProcessing =
-                new TypeQueryOperationProcessing(transactionDaoDb, reportService);
+                new TypeQueryOperationProcessing(map);
         TypeProcessingStrategy<TypeQuery> queryProcessingStrategy =
                 new QueryProcessingStrategy(typeQueryOperationProcessing);
 
         TypeOrderOperationProcessing typeOrderOperationProcessing =
-                new TypeOrderOperationProcessing(transactionDaoDb);
+                new TypeOrderOperationProcessing(map);
         TypeProcessingStrategy<TypeOrder> orderProcessingStrategy =
                 new OrderProcessingStrategy(typeOrderOperationProcessing);
 
+        map.put(TypeTransaction.UPDATE, new UpdateProcessingHandler(updateProcessingStrategy));
+        map.put(TypeTransaction.QUERY, new QueryProcessingHandler(queryProcessingStrategy));
+        map.put(TypeTransaction.ORDER, new OrderProcessingHandler(orderProcessingStrategy));
+
         TypeTransactionOperationProcessing typeTransactionOperationProcessing =
-                new TypeTransactionOperationProcessing(updateProcessingStrategy,
-                        queryProcessingStrategy, orderProcessingStrategy);
+                new TypeTransactionOperationProcessing(map);
         TypeProcessingStrategy<TypeTransaction> transactionProcessingStrategy =
                 new TransactionProcessingStrategy(typeTransactionOperationProcessing);
 
+        Map<TypeTransaction, Model> mapModels = new HashMap<>();
+        mapModels.put(TypeTransaction.ORDER, new Order());
+        mapModels.put(TypeTransaction.QUERY, new Query());
+        mapModels.put(TypeTransaction.UPDATE, new Update());
+
         TransactionService transactionService =
-                new TransactionServiceImpl(transactionProcessingStrategy);
+                new TransactionServiceImpl(transactionProcessingStrategy, mapModels);
 
         List<String> lines = fileReaderService.read(INPUT_FILE);
         transactionService.processing(lines);

@@ -1,5 +1,7 @@
 package order.book.service.strategy.handler;
 
+import order.book.model.Model;
+
 public interface ProcessingHandler {
-    void processing(String[] transaction);
+    void processing(Model model);
 }
