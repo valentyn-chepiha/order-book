@@ -6,8 +6,14 @@ import order.book.exception.DataProcessingException;
 import order.book.service.FileWriterService;
 
 public class FileWriterServiceImpl implements FileWriterService {
+    private String fileName;
+
+    public FileWriterServiceImpl(String fileName) {
+        this.fileName = fileName;
+    }
+
     @Override
-    public void write(String fileName, String report) {
+    public void write(String report) {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName, true))) {
             bufferedWriter.write(report);
         } catch (Exception e) {

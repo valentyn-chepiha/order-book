@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 import order.book.model.types.TypeTransaction;
 import order.book.service.strategy.handler.ProcessingHandler;
 
-public class TypeTransactionOperationProcessing implements TypeOperationProcessing<TypeTransaction> {
+public class TypeTransactionOperationProcessing implements
+        TypeOperationProcessing<TypeTransaction> {
     private final Map<Object, ProcessingHandler> map;
 
     public TypeTransactionOperationProcessing(Map<Object, ProcessingHandler> map) {

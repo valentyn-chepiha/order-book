@@ -48,9 +48,8 @@ public class Main {
 
     public static void main(String[] args) {
         TransactionDaoDb transactionDaoDb = new TransactionDaoDbImpl();
-        ReportService reportService = new ReportServiceImpl();
-        FileReaderService fileReaderService = new FileReaderServiceImpl();
-        FileWriterService fileWriterService = new FileWriterServiceImpl();
+        FileWriterService fileWriterService = new FileWriterServiceImpl(OUTPUT_FILE);
+        ReportService reportService = new ReportServiceImpl(fileWriterService);
 
         Map<Object, ProcessingHandler> map = new HashMap<>();
         map.put(TypeUpdate.ASK, new AskProcessingHandler(transactionDaoDb));
@@ -93,8 +92,8 @@ public class Main {
         TransactionService transactionService =
                 new TransactionServiceImpl(transactionProcessingStrategy, mapModels);
 
+        FileReaderService fileReaderService = new FileReaderServiceImpl();
         List<String> lines = fileReaderService.read(INPUT_FILE);
         transactionService.processing(lines);
-        fileWriterService.write(OUTPUT_FILE, reportService.buildReport());
     }
 }

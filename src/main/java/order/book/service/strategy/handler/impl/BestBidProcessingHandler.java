@@ -22,7 +22,6 @@ public class BestBidProcessingHandler implements ProcessingHandler {
 
     @Override
     public void processing(Model transaction) {
-//        Set<Map.Entry<Long, Long>> allBids = transactionDaoDb.getAll(((Update) transaction).getTypeUpdate());
         Set<Map.Entry<Long, Long>> allBids = transactionDaoDb.getAll(TypeUpdate.BID);
         Operation operation = AnaliseTransaction.getBestBid(allBids);
         // todo
